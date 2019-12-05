@@ -1,0 +1,226 @@
+html,
+body {
+    margin: 0px;
+    overflow: hidden;
+}
+
+body {
+    background-color: #121212;
+}
+
+.reddit-preview {
+    display: none !important;
+}
+
+.node circle {
+    fill: #26C6DA;
+    opacity: 0.8;
+}
+
+
+.node--internal circle {
+    fill: #AB47BC;
+    opacity: 0.8;
+}
+
+.link {
+    fill: none;
+    stroke: #CFD8DC;
+    stroke-opacity: 0.3;
+    stroke-width: 1px;
+}
+
+#ground {
+    opacity: 0;
+    position: absolute;
+    right: 0px;
+    width: 900px;
+    height: 100vh;
+}
+
+#fit-view {
+    position: absolute;
+    color: #B0BEC5;
+    opacity: 0;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #333333;
+    font-size: 15px;
+    bottom: 75px;
+    width: 70px;
+    right: 365px;
+    text-align: center;
+    font-family: 'Lato', sans-serif;
+    z-index: 99999;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 5px 5px rgba(0, 0, 0, 0.22);
+}
+
+#fit-view:hover {
+    background-color: #444444;
+}
+
+#title {
+    position: absolute;
+    font-size: 40px;
+    color: #29B6F6;
+    opacity: 0.5;
+    left: 100px;
+    top: 200px;
+    font-family: 'Lato', sans-serif;
+}
+
+#sub-title {
+    position: absolute;
+    font-size: 20px;
+    color: #CFD8DC;
+    opacity: 0.5;
+    left: 100px;
+    width: 290px;
+    top: 260px;
+    font-family: 'Lato', sans-serif;
+}
+
+#subr-input {
+    outline: none;
+    background-color: #303030;
+    position: absolute;
+    width: 250px;
+    font-size: 20px;
+    left: 100px;
+    top: 400px;
+    height: 30px;
+    padding-left: 32px;
+    padding-right: 15px;
+    font-family: 'Lato', sans-serif;
+    padding-bottom: 4px;
+    color: #bdbdbd;
+    border-radius: 5px;
+    border: none;
+}
+
+#subr-input:focus {
+    outline: none;
+}
+
+#placeholder {
+    position: absolute;
+    font-size: 20px;
+    left: 115px;
+    color: #bdbdbd;
+    top: 404px;
+    font-family: 'Lato', sans-serif;
+}
+
+#sugg-box {
+    display: none;
+    position: absolute;
+    left: 100px;
+    width: 298px;
+    top: 440px;
+    background-color: #222222;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: 0px solid #555555;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 5px 5px rgba(0, 0, 0, 0.22);
+}
+
+.sugg-item {
+    padding-left: 15px;
+    opacity: 0.7;
+    width: 280px;
+    font-family: 'Lato', sans-serif;
+    color: #bdbdbd;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.sugg-item:hover {
+    background-color: #444444;
+}
+
+
+#preloader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 200px;
+    position: fixed;
+    top: 40vh;
+    right: 350px;
+    z-index: 9999;
+    transition: opacity 0.3s linear;
+}
+
+#loaderholder {
+    position: absolute;
+    opacity: 0;
+    color: #505050;
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    width: 200px;
+    right: 350px;
+    text-align: center;
+    margin-top: 65vh;
+}
+
+#post-box {
+    opacity: 0;
+    display: none;
+    text-decoration: none;
+    position: absolute;
+    width: 340px;
+    background-color: #151515;
+    left: 100px;
+    top: 550px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 5px 5px rgba(0, 0, 0, 0.22);
+    border: 0.3px solid #555555;
+}
+
+#post-box:hover {
+    background-color: #333333;
+}
+
+#post-subr {
+    display: inline-block;
+    width: 250px;
+    font-size: 15px;
+    color: #29B6F6;
+    opacity: 0.6;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 10px;
+}
+
+#post-time {
+    width: 75px;
+    text-align: right;
+    display: inline-block;
+    font-size: 13px;
+    color: #bdbdbd;
+    opacity: 0.6;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 10px;
+}
+
+#post-title {
+    font-size: 15px;
+    color: #bdbdbd;
+    opacity: 0.6;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 12px;
+}
+
+#post-ccount {
+    font-size: 15px;
+    color: #bdbdbd;
+    opacity: 0.4;
+    font-family: 'Lato', sans-serif;
+    font-style: italic;
+}

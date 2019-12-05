@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <title>Shape of reddit</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="static/main.css">
+    <script type="text/javascript" src="static/subr_list.json"></script>
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div id="title">Shape of Reddit</div>
+    <div id="sub-title">Visualise the structure of conversations on Reddit</div>
+    <div id="fit-view">fit view</div>
+    <div id="ground"></div>
+    <div id="loaderholder">
+        fetching comments
+        <div id="preloader">
+            <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-ripple" style="background:0 0">
+                <circle cx="50" cy="50" r="4.719" fill="none" stroke="#5699d2" stroke-width="2">
+                    <animate attributeName="r" calcMode="spline" values="0;40" keyTimes="0;1" dur="3" keySplines="0 0.2 0.8 1" begin="-1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" calcMode="spline" values="1;0" keyTimes="0;1" dur="3" keySplines="0.2 0 0.8 1" begin="-1.5s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="50" cy="50" r="27.591" fill="none" stroke="#5699d2" stroke-width="2">
+                    <animate attributeName="r" calcMode="spline" values="0;40" keyTimes="0;1" dur="3" keySplines="0 0.2 0.8 1" begin="0s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" calcMode="spline" values="1;0" keyTimes="0;1" dur="3" keySplines="0.2 0 0.8 1" begin="0s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+        </div>
+    </div>
+    <input type="text" id="subr-input" placeholder="subreddit" oninput="suggest(this.value);">
+    <div id="placeholder">r/</div>
+    <div id="sugg-box"></div>
+    <a id="post-box" target="_blank">
+        <div id="post-subr"></div>
+        <div id="post-time"></div>
+        <div id="post-title"></div>
+        <div id="post-ccount"></div>
+    </a>
+</body>
+<script type="text/javascript">
+var post_url;
+var sugg_id = -1;
+
+function sim(wda, wdb) {
+
+    var r = wda.toLowerCase().indexOf(wdb.toLowerCase());
+    if (r != -1)
+        return true;
+}
+
+function search(key) {
+
+    var result = [];
+    for (var i = 0; i < subr_list.length; i++)
+        if (sim(subr_list[i], key)) {
+            result.push(subr_list[i]);
+        }
+    return result
+}
+
+function suggest(key) {
+    var sugg_box = d3.select('#sugg-box');
+    sugg_box.html("")
+    var sugg = search(key).slice(0, 6)
+
+    if (key.length < 3 || sugg.length == 0) {
+        sugg_box.style('display', 'none')
+        return;
+    }
+
+
+    sugg_box.style('display', 'block')
+    sugg_box.selectAll('sugg-item')
+        .data(sugg)
+        .enter()
+        .append('div')
+        .attr('class', 'sugg-item')
+        .text(function(d) { return d })
+}
+
+function submit() {
+
+    d3.select('#ground')
+        .transition()
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 0)
+
+    d3.select('#fit-view')
+        .transition()
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 0)
+
+    d3.select('#post-box')
+        .transition()
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 0)
+        .style("display", 'none')
+
+    d3.select('#loaderholder')
+        .transition()
+        .delay(300)
+        .duration(200)
+        .ease(d3.easeLinear)
+        .style("opacity", 1)
+        .style('display', 'block')
+
+    var subr = document.getElementById('subr-input').value
+    var url = "http://0.0.0.0:5000/r/" + subr;
+
+    d3.json(url, function(json) {
+        renderTree(json.data)
+        post_url = json.link;
+        var subr = 'r/' + post_url.split('/')[2];
+        post_url = 'https://reddit.com' + post_url;
+        d3.select('#post-box').attr('href', post_url)
+        d3.select('#post-subr').text(subr)
+
+        var t = (new Date(json.time * 1000)).toString().split(' ')
+        var t = t[2] + ' ' + t[1] + ' ' + t[3].slice(-2)
+        d3.select('#post-time').text(t)
+
+        var t = json.title.substring(0, 95)
+        d3.select('#post-title').text(t + (json.title.length > 95 ? "..." : ""))
+
+        var t = json.c_count + ' comments • ' + json.points + ' points'
+        d3.select('#post-ccount').text(t)
+
+    });
+}
+
+
+
+var input = document.getElementById('subr-input')
+input.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        submit()
+    }
+});
+
+var input = document.getElementById('subr-input')
+input.addEventListener("keyup", function(event) {
+    if (event.keyCode === 40) {
+        event.preventDefault();
+        console.log('down')
+        sugg_id++;
+        d3.selectAll('.sugg-item')
+            .style('background-color', function(d, i) {
+                console.log(i == sugg_id);
+                return i == sugg_id ? "#444444" : "none";
+            })
+
+    }
+});
+
+var input = document.getElementById('subr-input')
+input.addEventListener("keyup", function(event) {
+    if (event.keyCode === 38) {
+        event.preventDefault();
+        console.log('up')
+    }
+});
+
+
+
+d3.select('#fit-view')
+    .on('click', function() {
+        svg_holder.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
+    })
+</script>
+<script>
+width = d3.select("#ground").style('width').slice(0, -2);
+height = d3.select("#ground").style('height').slice(0, -2);
+
+
+var stratify = d3.stratify()
+    .parentId(function(d) { return d[0] })
+    .id(function(d) { return d[1] })
+
+var tree = d3.tree()
+    .size([width - 100, height - 100])
+    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+var zoom = d3.zoom().scaleExtent([0.8, 4]).on("zoom", zoomed)
+
+var svg_holder, svg
+
+function zoomed() {
+    svg.attr("transform", d3.event.transform)
+    z = (d3.event.transform.k < 2) ? d3.event.transform.k : 2
+    svg.selectAll('.dots').attr('transform', 'scale(' + (1 / z) + ')')
+}
+
+function renderTree(data) {
+
+    d3.select('#loaderholder')
+        .transition()
+        .duration(200)
+        .ease(d3.easeLinear)
+        .style("opacity", 0)
+        .style('display', 'none')
+
+
+    d3.select("#ground").selectAll("*").remove();
+
+    svg_holder = d3.select("#ground")
+        .append('svg')
+
+    svg = svg_holder
+        .attr('width', width)
+        .attr('height', height)
+        .call(zoom)
+        .append("g")
+
+    var g = svg
+        .append("g")
+        .attr("transform", "translate(" + (width / 2) + "," + (50 + height / 2) + ")")
+
+    g.append('rect')
+        .attr('fill', '#121212')
+        .attr('opacity', 0)
+        .attr('width', width)
+        .attr('height', height)
+        .attr("transform", "translate(" + -(width / 2) + "," + -(50 + height / 2) + ")")
+
+    var root = tree(stratify(data));
+
+    var link = g.selectAll(".link")
+        .data(root.descendants().slice(1))
+        .enter().append("path")
+        .attr("class", "link")
+        .attr('fill', '#4FC3F7')
+        .attr("d", function(d) {
+            return "M" + project(d.x, d.y) +
+                "C" + project(d.x, (d.y + d.parent.y) / 2) +
+                " " + project(d.parent.x, (d.y + d.parent.y) / 2) +
+                " " + project(d.parent.x, d.parent.y);
+        });
+
+
+
+    var node = g.selectAll(".node")
+        .data(root.descendants())
+        .enter().append("g")
+        .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
+        .attr("transform", function(d) { return "translate(" + project(d.x, d.y) + ")"; });
+
+    node.append("circle")
+        .attr('class', 'dots')
+        .attr("r", 1.5)
+        .attr('id', function(d) { return d['data'][1] })
+        .on('mouseover', dot_mouseover)
+        .on('mouseleave', dot_mouseleave)
+        .on('click', dot_click)
+
+    function dot_mouseover() {
+        d3.select(this).attr('r', '5')
+    }
+
+    function dot_mouseleave() {
+        d3.select(this).attr('r', '1.5')
+    }
+
+    function dot_click() {
+        var _id = d3.select(this).attr('id')
+        window.open(post_url + _id, "_blank");
+
+    }
+
+
+    d3.select('#ground')
+        .transition()
+        .delay(400)
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 1)
+
+    d3.select('#fit-view')
+        .transition()
+        .delay(400)
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.5)
+
+    d3.select('#post-box')
+        .transition()
+        .delay(400)
+        .duration(500)
+        .ease(d3.easeLinear)
+        .style("opacity", 1)
+        .style("display", 'block')
+
+};
+
+function project(x, y) {
+    var angle = (x - 90) / 180 * Math.PI,
+        radius = y * 0.6;
+    return [radius * Math.cos(angle), radius * Math.sin(angle)];
+}
+</script>
