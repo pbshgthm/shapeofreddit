@@ -31,8 +31,9 @@
             </svg>
         </div>
     </div>
-    <input type="text" id="subr-input" placeholder="subreddit" oninput="suggest(this.value);">
+    <input type="text" id="subr-input" autocorrect="off" placeholder="subreddit" oninput="suggest(this.value);">
     <div id="placeholder">r/</div>
+    <img id="rand-btn" src="static/random.png" onclick="rand_subr()" />
     <div id="sugg-box"></div>
     <a id="post-box" target="_blank">
         <div id="post-subr"></div>
@@ -43,6 +44,7 @@
 </body>
 <script type="text/javascript">
 var post_url;
+var sugg_items = [];
 var sugg_id = -1;
 
 function sim(wda, wdb) {
@@ -65,9 +67,9 @@ function search(key) {
 function suggest(key) {
     var sugg_box = d3.select('#sugg-box');
     sugg_box.html("")
-    var sugg = search(key).slice(0, 6)
+    sugg_items = search(key).slice(0, 6)
 
-    if (key.length < 3 || sugg.length == 0) {
+    if (key.length < 3 || sugg_items.length == 0) {
         sugg_box.style('display', 'none')
         return;
     }
@@ -75,11 +77,38 @@ function suggest(key) {
 
     sugg_box.style('display', 'block')
     sugg_box.selectAll('sugg-item')
-        .data(sugg)
+        .data(sugg_items)
         .enter()
         .append('div')
         .attr('class', 'sugg-item')
         .text(function(d) { return d })
+        .on('click', function(d) {
+
+            d3.select('#sugg-box').style('display', 'none')
+            d3.select('#subr-input').property('value', d.split('/')[1]);
+            submit();
+            sugg_id = -1;
+        })
+        .on('mouseover', function(d, i) {
+            sugg_id = i
+            console.log(i)
+            d3.selectAll('.sugg-item').style('background-color', 'transparent');
+            d3.select(this).style('background-color', '#444444');
+        })
+        .on('mouseleave', function(d, i) {
+            d3.select(this).style('background-color', 'transparent');
+        })
+
+
+}
+
+function rand_subr() {
+    var r_subr = subr_list[Math.floor(Math.random() * 100)];
+    d3.select('#sugg-box').style('display', 'none')
+    d3.select('#subr-input').property('value', r_subr.split('/')[1]);
+    submit();
+    sugg_id = -1;
+
 }
 
 function submit() {
@@ -135,38 +164,52 @@ function submit() {
     });
 }
 
-
+window.addEventListener('click', function(e) {
+    if (document.getElementById('subr-input').contains(e.target)) {
+        // Clicked in box
+    } else {
+        d3.select('#sugg-box').style('display', 'none')
+    }
+});
 
 var input = document.getElementById('subr-input')
 input.addEventListener("keyup", function(event) {
     if (event.keyCode === 13) {
         event.preventDefault();
-        submit()
+        submit();
+        d3.select('#sugg-box').style('display', 'none')
+        sugg_id = -1;
+
     }
 });
 
 var input = document.getElementById('subr-input')
 input.addEventListener("keyup", function(event) {
-    if (event.keyCode === 40) {
+    if (event.keyCode === 40 || event.keyCode === 38) {
         event.preventDefault();
-        console.log('down')
-        sugg_id++;
+
+        if (event.keyCode == 40) {
+            if (sugg_id < sugg_items.length - 1)
+                sugg_id++;
+        }
+        if (event.keyCode == 38) {
+            if (sugg_id > 0)
+                sugg_id--;
+            if (sugg_id < 0) {
+                d3.select('#sugg-box').style('display', 'none')
+                return;
+            }
+        }
+        console.log(sugg_id)
         d3.selectAll('.sugg-item')
             .style('background-color', function(d, i) {
-                console.log(i == sugg_id);
-                return i == sugg_id ? "#444444" : "none";
+                return i == sugg_id ? "#444444" : "transparent";
             })
+        d3.select('#subr-input').property('value', sugg_items[sugg_id].split('/')[1])
 
     }
 });
 
-var input = document.getElementById('subr-input')
-input.addEventListener("keyup", function(event) {
-    if (event.keyCode === 38) {
-        event.preventDefault();
-        console.log('up')
-    }
-});
 
 
 

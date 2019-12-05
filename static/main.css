@@ -103,6 +103,18 @@ body {
     outline: none;
 }
 
+#rand-btn{
+    width: 25px;
+    position: absolute;
+    left: 415px;
+    top: 407px;
+    opacity: 0.2;
+    cursor: pointer;
+}
+#rand-btn:hover{
+    opacity: 0.4;
+}
+
 #placeholder {
     position: absolute;
     font-size: 20px;
@@ -113,6 +125,7 @@ body {
 }
 
 #sugg-box {
+    z-index: 99999!important;
     display: none;
     position: absolute;
     left: 100px;
@@ -185,7 +198,7 @@ body {
 }
 
 #post-box:hover {
-    background-color: #333333;
+    background-color: #222222;
 }
 
 #post-subr {
