@@ -5,10 +5,12 @@
     <title>Shape of reddit</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Lato:300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="static/main.css">
-    <script type="text/javascript" src="static/subr_list.json"></script>
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/javascript" src="subr_list.json"></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="/__/firebase/7.5.2/firebase-app.js"></script>
+    <script src="/__/firebase/init.js"></script>
 </head>
 
 <body>
@@ -33,7 +35,7 @@
     </div>
     <input type="text" id="subr-input" autocorrect="off" placeholder="subreddit" oninput="suggest(this.value);">
     <div id="placeholder">r/</div>
-    <img id="rand-btn" src="static/random.png" onclick="rand_subr()" />
+    <img id="rand-btn" src="random.png" onclick="rand_subr()" />
     <div id="sugg-box"></div>
     <a id="post-box" target="_blank">
         <div id="post-subr"></div>
@@ -147,7 +149,7 @@ function submit() {
         .style('display', 'block')
 
     var subr = document.getElementById('subr-input').value
-    var url = "http://0.0.0.0:5000/r/" + subr;
+    var url = "https://us-central1-shapeofreddit.cloudfunctions.net/buildtree?subr=" + subr;
 
     d3.json(url, function(json) {
 
@@ -352,7 +354,6 @@ function renderTree(data) {
         .attr('id', function(d) { return d['data'][1] })
         .transition()
         .delay(function(d, i) {
-            return 0
             return 500+20 * d['data'][3]
         })
         .duration(500)
@@ -385,7 +386,6 @@ function renderTree(data) {
     d3.selectAll('.link')
         .transition()
         .delay(function(d) {
-            return 0
             return 500+d['data'][3] * 20;
         })
         .duration(500)
